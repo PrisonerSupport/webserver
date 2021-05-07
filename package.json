@@ -1,0 +1,27 @@
+{
+  "name": "webserver",
+  "version": "1.0.0",
+  "description": "Webserver for prisoner support framework",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "path": "^0.12.7",
+    "pbkdf2-password": "^1.2.1",
+    "react": "^17.0.2",
+    "react-d3-library": "^1.1.8",
+    "react-dom": "^17.0.2",
+    "react-redux": "^7.2.4",
+    "react-router-dom": "^5.2.0",
+    "yaml": "^1.10.2"
+  },
+  "devDependencies": {
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.4"
+  }
+}

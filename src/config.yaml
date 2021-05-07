@@ -1,0 +1,15 @@
+- metadata:
+  baseURL: 'prisoner.support'
+
+- content:
+  title: 'Prisoner Support Index'
+  description: 'Lorum Ipsum'
+
+- styling:
+  color:
+    primary: '#FFFFFF'
+    secondary: '#000000'
+    accent: '#FFF000'
+  font:
+    family: 'arial'
+    
