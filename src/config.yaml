@@ -1,5 +1,6 @@
 - metadata:
   baseURL: 'prisoner.support'
+  port: 8000
 
 - content:
   title: 'Prisoner Support Index'
