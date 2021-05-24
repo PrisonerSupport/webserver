@@ -32,12 +32,32 @@ auth.use(function (req, res, next) {
     next();
 });
 // Authenticate
-function verifyAuthentication(username, pass, fn) {
-    console.log('authenticating %s:%s', username, pass);
-    var authenticated = db_utils_1.authenticate(username, pass); // User not found errors handled here
-    if (!authenticated) {
-        throw new Error("Password is incorrect");
+auth.post('/:userId', (req, res, next) => {
+    if (!req.body) {
+        res.send("No payload sent with request");
     }
-}
+    if (!req.body.hasOwnProperty('password')) {
+        res.send("Payload does not contain a password");
+    }
+    var username = req.params.userId;
+    var pass = req.body['password'];
+    console.log('authenticating %s', username);
+    try {
+        var authentication = db_utils_1.authenticate(username, pass);
+        if (authentication) {
+            res.status(200);
+            console.log("%s authenticated", username);
+            res.send("User authenticated");
+        }
+        else {
+            res.status(403);
+            console.log("Failed authentication for %s", username);
+            res.send("Password is incorrect");
+        }
+    }
+    catch (err) {
+        throw err;
+    }
+});
 // Pass up the router
 exports.default = auth;

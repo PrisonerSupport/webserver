@@ -4,7 +4,8 @@
  *     https://github.com/expressjs/express/blob/master/examples/auth/index.js
  */
 
-import { authenticate } from './db_utils'
+import { authenticate } from './db_utils';
+import { Request, Response } from 'express';
 
  var express = require('../..');
  var path = require('path');
@@ -37,14 +38,36 @@ import { authenticate } from './db_utils'
  });
  
  // Authenticate
- 
- function verifyAuthentication(username: any, pass: any, fn: any) {
-     console.log('authenticating %s:%s', username, pass);
-     var authenticated = authenticate(username, pass);  // User not found errors handled here
-     if (!authenticated) {
-         throw new Error("Password is incorrect");
+
+ auth.post('/:userId', (req: Request, res: Response, next: any) => {
+     if (!req.body) {
+         res.send("No payload sent with request");
      }
- }
+
+     if (!req.body.hasOwnProperty('password')) {
+         res.send("Payload does not contain a password");
+     }
+
+     var username = req.params.userId
+     var pass = req.body['password'];
+
+     console.log('authenticating %s', username);
+
+     try {
+         var authentication = authenticate(username, pass);
+         if (authentication) {
+             res.status(200)
+             console.log("%s authenticated", username)
+             res.send("User authenticated")
+         } else {
+             res.status(403);
+             console.log("Failed authentication for %s", username);
+             res.send("Password is incorrect");
+         }
+     } catch (err) {
+        throw err;
+     }
+ })
  
 // Pass up the router
 

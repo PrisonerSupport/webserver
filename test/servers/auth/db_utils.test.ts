@@ -5,7 +5,7 @@ import { expect } from 'chai'
 
 describe('Authentication database interactions', function() {
     describe('User insertion', function () {
-        it('inserts user into database', function () {
+        it('inserts user', function () {
             insertUser('user1', 'User 1', 'password');
             var user = getUserByUsername('user1')
             expect(user.name).equals('User 1', 'Name of inserted entry does not match')
