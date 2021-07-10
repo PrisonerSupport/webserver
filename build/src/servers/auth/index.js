@@ -4,10 +4,29 @@
  * Heavily inspired by
  *     https://github.com/expressjs/express/blob/master/examples/auth/index.js
  */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_utils_1 = require("./db_utils");
+const Errors = __importStar(require("./errors"));
 var express = require('../..');
-var path = require('path');
 var session = require('express-session');
 var auth = module.exports = express();
 // config -- TODO: Add configuration parameters to auth
@@ -39,11 +58,11 @@ auth.post('/:userId', (req, res, next) => {
     if (!req.body.hasOwnProperty('password')) {
         res.send("Payload does not contain a password");
     }
-    var username = req.params.userId;
-    var pass = req.body['password'];
+    let username = req.params.userId;
+    let pass = req.body['password'];
     console.log('authenticating %s', username);
     try {
-        var authentication = db_utils_1.authenticate(username, pass);
+        let authentication = db_utils_1.authenticate(username, pass);
         if (authentication) {
             res.status(200);
             console.log("%s authenticated", username);
@@ -56,6 +75,12 @@ auth.post('/:userId', (req, res, next) => {
         }
     }
     catch (err) {
+        if (err.name == Errors.NotFoundError.name) {
+            console.log("Username %s does not exist.", username);
+            res.status(403);
+            res.send("Username does not exist");
+        }
+        // Any other error is most likely serverside
         throw err;
     }
 });

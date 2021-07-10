@@ -6,9 +6,9 @@
 
 import { authenticate } from './db_utils';
 import { Request, Response } from 'express';
+import * as Errors from './errors';
 
  var express = require('../..');
- var path = require('path');
  var session = require('express-session');
  
  var auth = module.exports = express()
@@ -48,13 +48,13 @@ import { Request, Response } from 'express';
          res.send("Payload does not contain a password");
      }
 
-     var username = req.params.userId
-     var pass = req.body['password'];
+     let username = req.params.userId
+     let pass = req.body['password'];
 
      console.log('authenticating %s', username);
 
      try {
-         var authentication = authenticate(username, pass);
+         let authentication = authenticate(username, pass);
          if (authentication) {
              res.status(200)
              console.log("%s authenticated", username)
@@ -65,6 +65,13 @@ import { Request, Response } from 'express';
              res.send("Password is incorrect");
          }
      } catch (err) {
+        if (err.name == Errors.NotFoundError.name) {
+            console.log("Username %s does not exist.", username);
+            res.status(403);
+            res.send("Username does not exist");
+        }
+
+        // Any other error is most likely serverside
         throw err;
      }
  })

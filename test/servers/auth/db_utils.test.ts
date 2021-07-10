@@ -1,21 +1,52 @@
-import { authenticate, insertUser, getUserByUsername } from '../../../src/servers/auth/db_utils';
+/**
+ * Unit tests for the auth server utilities
+ */
+
+import { authenticate, insertUser } from '../../../src/servers/auth/db_utils';
+import * as Errors from '../../../src/servers/errors';
 import { describe, it } from 'mocha'
-import { expect } from 'chai'
+import { expect, assert, should } from 'chai'
 
 
-describe('Authentication database interactions', function() {
+describe('Authentication database integration testing', function() {
+
+    this.beforeAll(async function () {
+        
+    })
+
     describe('User insertion', function () {
-        it('inserts user', function () {
-            insertUser('user1', 'User 1', 'password');
-            var user = getUserByUsername('user1')
-            expect(user.name).equals('User 1', 'Name of inserted entry does not match')
+        it('inserts user', async function () {
+                await insertUser('user1', 'User 1', 'email', 'password');
+        });
+
+        it('fails at duplicate user entry', async function () {
+            try {
+                await insertUser('user1', 'Other User Name', 'email', 'otherPassword');
+            }
+            catch (err) {
+                expect(err.name == Errors.DuplicateEntryError.name);
+            }
         });
     });
 
     describe('User authentication', function() {
-        it('authenticates the password of a user', function () {
-            expect(authenticate('user1', 'password'))
-            expect(!authenticate('user1', 'wrongpassword'))
+        it('authenticates the correct password of a user', async function () {
+            const shouldBeTrue = await authenticate('user1', 'password');
+            expect(shouldBeTrue);
+        });
+
+        it('fails to authenticate wrong password of a user'), async function() {
+            const shouldBeFalse = await authenticate('user1', 'wrongpassword');
+            expect(!shouldBeFalse);
+        }
+
+        it('properly throws error for non-existent user', async function () {
+            try {
+                await authenticate('nonExistentUser', 'password');
+            }
+            catch (err) {
+                expect(err.name == Errors.NotFoundError.name);
+            }
         });
     });
 });
